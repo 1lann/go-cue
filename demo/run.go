@@ -77,7 +77,7 @@ func main() {
 
 	fmt.Println("\n------------------------------------------------------------\n")
 
-	fmt.Println("-- END OF TESTS --")
+	fmt.Println("-- END OF DEMO TEST --")
 
 	time.Sleep(time.Minute)
 }

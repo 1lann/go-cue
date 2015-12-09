@@ -4,7 +4,6 @@ package cue
 import "C"
 
 import (
-	"fmt"
 	"image/color"
 	"unicode"
 	"unsafe"
@@ -88,6 +87,10 @@ func SetMultiLedColors(ledColors []LedColor) error {
 }
 
 func GetLedById(id LedId) (Led, bool) {
+	if numLeds == 0 {
+		panic("cue: no leds found (did you call cue.InitializeLeds()?)")
+	}
+
 	if led, found := allLeds[id]; found {
 		return led, true
 	} else {
@@ -96,6 +99,10 @@ func GetLedById(id LedId) (Led, bool) {
 }
 
 func GetLedByKey(key rune) (Led, bool) {
+	if numLeds == 0 {
+		panic("cue: no leds found (did you call cue.InitializeLeds()?)")
+	}
+
 	key = unicode.ToUpper(key)
 
 	for _, led := range allLeds {
@@ -108,6 +115,10 @@ func GetLedByKey(key rune) (Led, bool) {
 }
 
 func GetLedAtPosition(top float64, left float64) (Led, bool) {
+	if numLeds == 0 {
+		panic("cue: no leds found (did you call cue.InitializeLeds()?)")
+	}
+
 	for _, led := range allLeds {
 		if (top-led.Position.Top) < led.Position.Height &&
 			(left-led.Position.Left) < led.Position.Width {
@@ -119,6 +130,10 @@ func GetLedAtPosition(top float64, left float64) (Led, bool) {
 }
 
 func GetAllLeds() []Led {
+	if numLeds == 0 {
+		panic("cue: no leds found (did you call cue.InitializeLeds()?)")
+	}
+
 	allLedsSlice := make([]Led, numLeds)
 
 	i := 0
@@ -133,9 +148,8 @@ func GetAllLeds() []Led {
 // Returns the number of leds found, and any errors.
 // Returns 0 leds and no errors (nil) if there is no device connected which
 // has leds.
+// You must call Initialize() first before you may call InitializeLeds().
 func InitializeLeds() (int, error) {
-	fmt.Println("Initializing leds...")
-
 	allLeds = make(map[LedId]Led)
 
 	positionsPtr := unsafe.Pointer(C.CorsairGetLedPositions())
@@ -144,7 +158,7 @@ func InitializeLeds() (int, error) {
 	}
 
 	ledPositions := *(*internalPositions)(positionsPtr)
-	numLeds := int(ledPositions.numberOfLed)
+	numLeds = int(ledPositions.numberOfLed)
 
 	if numLeds == 0 {
 		return 0, nil
@@ -163,8 +177,6 @@ func InitializeLeds() (int, error) {
 				Width:  float64(led.width),
 			},
 		}
-
-		fmt.Println("Found led with id: ", LedId(led.ledId))
 	}
 
 	for char := 'A'; char <= 'Z'; char++ {
@@ -176,8 +188,6 @@ func InitializeLeds() (int, error) {
 		currentLed := allLeds[LedId(ledId)]
 		currentLed.KeyName = char
 		allLeds[LedId(ledId)] = currentLed
-
-		fmt.Println("Mapped character: ", char, " to ", LedId(ledId))
 	}
 
 	return numLeds, nil

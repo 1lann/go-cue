@@ -37,7 +37,7 @@ var (
 	CE_Success                  error = nil
 	CE_ServerNotFound                 = errors.New("cue: could not find CUE server")
 	CE_NoControl                      = errors.New("cue: cannot take control")
-	CE_ProtocolHandshakeMissing       = errors.New("cue: protocol handshake missing (did you run cue.Initialize()?)")
+	CE_ProtocolHandshakeMissing       = errors.New("cue: protocol handshake missing (did you call cue.Initialize()?)")
 	CE_IncompatibleProtocol           = errors.New("cue: incompatible protocol (is the server and client up to date?)")
 	CE_InvalidArguments               = errors.New("cue: invalid arguments were supplied")
 	ErrUnknown                        = errors.New("cue: unknown error")
